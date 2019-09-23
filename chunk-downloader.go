@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 	"sync"
 )
@@ -23,11 +25,11 @@ type Task struct {
 
 // Main should act as another file, calling this download command
 func main() {
-	f, _ := os.OpenFile("test.mp4", os.O_CREATE|os.O_RDWR, 0666)
+	f, _ := os.OpenFile("test.zip", os.O_CREATE|os.O_RDWR, 0666)
 	defer f.Close()
 
 	t := Task{
-		URL:    "https://cdn.discordapp.com/attachments/574963057957011476/615978766442692613/profileconvert.mp4",
+		URL:    "http://ipv4.download.thinkbroadband.com/1GB.zip",
 		chunks: 100,
 		File:   f,
 		wg:     nil,
@@ -57,7 +59,6 @@ func (t *Task) initDownload() {
 
 	chunkSize := contentSize / int64(t.chunks)
 	fmt.Println(contentSize)
-	// chunkRemainder := contentSize % int64(t.chunks)
 
 	var start, end int64
 
@@ -73,9 +74,11 @@ func (t *Task) initDownload() {
 	go t.downloadBytes(start, end)
 
 	t.wg.Wait()
+
+	t.validateDownload(contentSize)
 }
 
-// download bytes from Task struct's URL, with ranges (for chunks)
+// download bytes from Task struct's URL and write to file, with ranges (for chunks)
 func (t *Task) downloadBytes(start int64, end int64) {
 	fmt.Printf("range: %d - %d\n", start, end)
 
@@ -107,19 +110,25 @@ func (t *Task) downloadBytes(start int64, end int64) {
 		handleErr(&err)
 
 		start += int64(nw)
-
 	}
-
 }
 
-// write downloaded bytes to Task struct's outfile, with offset for ranged downloads
-func (t *Task) writeBytes(start int64) {
+// perform validation test, to compare download with origninal file
+func (t *Task) validateDownload(contentSize int64) {
+	i, err := t.File.Stat()
+	handleErr(&err)
 
+	if i.Size() == contentSize {
+		fmt.Println("Filesizes match, download completed.")
+	}
 }
 
-// perform validation tests to file, to compare download with origninal file
-func (t *Task) validateDownload() {
+// extract filename from URL
+func getFilename(URL string) string {
+	URLStruct, err := url.Parse(URL)
+	handleErr(&err)
 
+	return filepath.Base(URLStruct.Path)
 }
 
 func handleErr(err *error) {

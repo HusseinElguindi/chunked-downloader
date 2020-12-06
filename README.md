@@ -1,4 +1,4 @@
-# chunked-downloader
+# Chunked Downloader
 Chunked downloader that speeds up file downloads by using byte ranges.
 
 ## Features

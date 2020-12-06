@@ -1,6 +1,8 @@
 # Chunked Downloader
 Chunked downloader that speeds up file downloads by using byte ranges.
 
+![Downloader Demo Image](https://github.com/HusseinElguindi/chunked-downloader/blob/master/img/demo.png?raw=true)
+
 ## Features
 - [x] Multithreading (goroutines)
 - [x] Command-line flags

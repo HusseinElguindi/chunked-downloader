@@ -26,6 +26,8 @@ $ ./chunked-downloader (Linux and MacOS)
 ```
 Once the program is running, everything is self-explanatory and intuitive.
 
+![Downloader Help Command](https://github.com/HusseinElguindi/chunked-downloader/blob/master/img/help.png?raw=true)
+
 ## Author
 - **Hussein Elguindi** - *all the work*
 
